@@ -122,7 +122,7 @@ module.exports = (createCommand) => {
         projectName
       });
 
-      // Create src directory and main.js, index.html
+      // Create src directory and index.js, index.html
       const srcPath = path.join(projectPath, 'src');
       if (!fs.existsSync(srcPath)) {
         fs.mkdirSync(srcPath);
@@ -133,14 +133,30 @@ module.exports = (createCommand) => {
         indexHtmlContent
       );
 
-      // Read and copy the template main.js
-      const mainTemplatePath = path.join(__dirname, '../templates/main-template.js');
+      // Read and copy the template index.js
+      const mainTemplatePath = path.join(__dirname, '../templates/index-template.js');
       const mainTemplateContent = fs.readFileSync(mainTemplatePath, 'utf-8');
 
       fs.writeFileSync(
-        path.join(srcPath, 'main.js'),
+        path.join(srcPath, 'index.js'),
         mainTemplateContent
       );
+
+      // If auto-update is enabled, create the dev-app-update.yml
+      if (autoUpdate) {
+        const updateTemplatePath = path.join(__dirname, '../templates/dev-app-update-template.yml');
+        const updateTemplateContent = fs.readFileSync(updateTemplatePath, 'utf-8');
+
+        const updateYmlContent = replacePlaceholders(updateTemplateContent, {
+          githubUsername: process.env.GITHUB_USERNAME,
+          gitRepo
+        });
+
+        fs.writeFileSync(
+          path.join(projectPath, 'dev-app-update.yml'),
+          updateYmlContent
+        );
+      }
 
       // Initialize Git repository and make the initial commit
       execSync('git init', { cwd: projectPath });
