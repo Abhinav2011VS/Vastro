@@ -43,7 +43,7 @@ linux:
   vendor: '{{githubUsername}}'
   synopsis: '{{appName}}'
   description: '{{description}}'
-  category: '{{}category}'
+  category: '{{category}}'
 
 directories:
   buildResources: 'build'
