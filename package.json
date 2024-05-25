@@ -1,0 +1,22 @@
+{
+  "name": "vastro",
+  "version": "0.0.1",
+  "description": "CLI tool for simplificity",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "install": "node installer.js",
+    "uninstall": "node uninstall.js"
+  },
+  "dependencies": {
+    "commander": "^8.3.0",
+    "inquirer": "^8.2.0",
+    "@octokit/rest": "^18.1.0"
+  },
+  "bin": {
+    "vastro": "./index.js"
+  },
+  "author" {
+    "name": "Abhinav VS"
+  }
+}
