@@ -141,15 +141,94 @@ module.exports = (createCommand) => {
         mainTemplateContent
       );
 
+      // Create .github/workflows directory and build.yml file
+      const workflowsPath = path.join(projectPath, '.github', 'workflows');
+      if (!fs.existsSync(workflowsPath)) {
+        fs.mkdirSync(workflowsPath, { recursive: true });
+      }
+
+      const buildYmlContent = fs.readFileSync(path.join(__dirname, '../templates/build.yml'), 'utf-8');
+      fs.writeFileSync(
+        path.join(workflowsPath, 'build.yml'),
+        buildYmlContent
+      );
+
       // Initialize Git repository and make the initial commit
       execSync('git init', { cwd: projectPath });
       execSync('git add .', { cwd: projectPath });
       execSync(`git commit -m "Initial commit"`, { cwd: projectPath });
 
+      console.log(`Git repository initialized successfully!`);
+
       // Link the local repo to the GitHub repo
       execSync(`git remote add origin https://github.com/${process.env.GITHUB_USERNAME}/${gitRepo}.git`, { cwd: projectPath });
       execSync('git push -u origin master', { cwd: projectPath });
 
-      console.log(`Electron app '${projectName}' created and pushed to GitHub successfully!`);
+      console.log(`GitHub repository '${gitRepo}' linked successfully!`);
+
+      // Create the .github/workflows directory
+      const githubDir = path.join(projectPath, '.github');
+      const workflowsDir = path.join(githubDir, 'workflows');
+      if (!fs.existsSync(githubDir)) {
+        fs.mkdirSync(githubDir);
+      }
+      if (!fs.existsSync(workflowsDir)) {
+        fs.mkdirSync(workflowsDir);
+      }
+
+      // Write the build.yml file
+      const buildYmlContent = `name: Build
+
+on: push
+
+jobs:
+  release:
+    runs-on: \${{ matrix.os }}
+
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Install Dependencies
+        run: npm ci
+        shell: bash
+
+      - name: Build
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist
+        shell: bash
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: built-files
+          path: |
+            dist/**/*.dmg
+            dist/**/*.exe
+            dist/**/*.msi
+            dist/**/*.AppImage
+            dist/**/*.deb`;
+
+      fs.writeFileSync(path.join(workflowsDir, 'build.yml'), buildYmlContent);
+
+      console.log('GitHub Actions workflow file created successfully!');
     });
 };
