@@ -14,8 +14,9 @@ module.exports = (createCommand) => {
     .command('electron-app <projectName>')
     .description('Create a new Electron app')
     .action(async (projectName) => {
-      if (!/^[a-z]+$/.test(projectName)) {
-        console.error('Error: The project name must be all lowercase letters.');
+      // Check if GitHub username is available
+      if (!process.env.GITHUB_USERNAME) {
+        console.error('Error: GitHub username is not set. Please log in and link your account.');
         process.exit(1);
       }
 
@@ -43,20 +44,18 @@ module.exports = (createCommand) => {
           }
         },
         {
-          type: 'confirm',
-          name: 'multiOS',
-          message: 'Do you need multi-OS compatibility?',
-          default: true
+          type: 'input',
+          name: 'category',
+          message: 'Enter the category of the app:'
         },
         {
-          type: 'confirm',
-          name: 'autoUpdate',
-          message: 'Do you want to enable auto-update feature?',
-          default: true
+          type: 'input',
+          name: 'description',
+          message: 'Enter the description of the app:'
         }
       ]);
 
-      const { author, gitRepo, version, multiOS, autoUpdate } = answers;
+      const { author, gitRepo, version, category, description } = answers;
 
       // GitHub authentication
       const octokit = new Octokit({
@@ -141,22 +140,6 @@ module.exports = (createCommand) => {
         path.join(srcPath, 'index.js'),
         mainTemplateContent
       );
-
-      // If auto-update is enabled, create the dev-app-update.yml
-      if (autoUpdate) {
-        const updateTemplatePath = path.join(__dirname, '../templates/dev-app-update-template.yml');
-        const updateTemplateContent = fs.readFileSync(updateTemplatePath, 'utf-8');
-
-        const updateYmlContent = replacePlaceholders(updateTemplateContent, {
-          githubUsername: process.env.GITHUB_USERNAME,
-          gitRepo
-        });
-
-        fs.writeFileSync(
-          path.join(projectPath, 'dev-app-update.yml'),
-          updateYmlContent
-        );
-      }
 
       // Initialize Git repository and make the initial commit
       execSync('git init', { cwd: projectPath });
