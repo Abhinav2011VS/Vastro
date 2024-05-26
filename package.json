@@ -23,7 +23,7 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis" // or any other target you prefer
+      "target": "nsis"
     },
     "nsis": {
       "oneClick": false,
