@@ -16,6 +16,21 @@
   "bin": {
     "vastro": "./index.js"
   },
+  "build": {
+    "appId": "net.abhinav.vastro-cli",
+    "productName": "Vastro CLI",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis" // or any other target you prefer
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "perMachine": true
+    }
+  },
   "author" {
     "name": "Abhinav VS"
   }
