@@ -1,17 +1,21 @@
 {
   "name": "vastro",
   "version": "0.0.1",
-  "description": "CLI tool for simplificity",
+  "description": "CLI tool for simplicity",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "install": "node installer.js",
-    "uninstall": "node uninstall.js"
+    "uninstall": "node uninstall.js",
+    "dist": "electron-builder"
   },
   "dependencies": {
+    "@octokit/rest": "^18.1.0",
     "commander": "^8.3.0",
-    "inquirer": "^8.2.0",
-    "@octokit/rest": "^18.1.0"
+    "inquirer": "^8.2.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.13.3"
   },
   "bin": {
     "vastro": "./index.js"
@@ -22,6 +26,10 @@
     "directories": {
       "output": "dist"
     },
+    "files": [
+      "**/*",
+      "!dist/**/*"
+    ],
     "win": {
       "target": "nsis"
     },
@@ -31,7 +39,12 @@
       "perMachine": true
     }
   },
-  "author" {
-    "name": "Abhinav VS"
+  "homepage": "https://vastro-cli.pages.dev",
+  "icon": "build/icon.png",
+  "license": "All Rights Reserved",
+  "author": {
+    "email": "abhinav2011vs@gmail.com",
+    "name": "Abhinav VS",
+    "url": "https://vastro-cli.pages.dev"
   }
 }
